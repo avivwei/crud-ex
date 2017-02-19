@@ -7,13 +7,19 @@ const Quote = require('./QuoteModel')
 mongoose.connect('mongodb://localhost/quotes');
 
 app.use(bodyParser.urlencoded({extende: true}));
+app.set('view engine', 'ejs');
 
+app.get('/', (req,res,next) => {
+  Quote.find((err,quotes) => {
+    if (err) {return next(err);}
+    if (!quotes) {return next(err);}
+    res.render('index.ejs', {quotes: quotes});
+  })
 
-app.get('/', (req,res) => {
-  res.sendfile(__dirname + '/index.html');  
+  //res.sendfile(__dirname + '/index.html');  
 })
 
-app.post('/', (req,res,next) => {
+app.post('/quotes', (req,res,next) => {
   const quote = new Quote(req.body);
   console.log(req.body)
   quote.save((err,quote) => {
